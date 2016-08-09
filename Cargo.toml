@@ -1,9 +1,18 @@
 [package]
 authors = ["messense <messense@icloud.com>"]
+description = "Redis appendonly file filter"
+keywords = ["Redis", "appendonly"]
+license = "MIT"
 name = "aof"
+readme = "README.md"
 version = "0.1.0"
+homepage = "https://github.com/bosondata/aof-rs"
+repository = "https://github.com/bosondata/aof-rs"
 
 [dependencies]
 clap = "2.10.0"
 regex = "0.1.73"
 resp = "0.4.0"
+
+[features]
+unstable = []

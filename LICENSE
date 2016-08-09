@@ -1,29 +1,3 @@
-# aof-rs - Redis appendonly file filter
-
-[![Build Status](https://travis-ci.org/bosondata/aof-rs.svg?branch=master)](https://travis-ci.org/bosondata/aof-rs)
-
-## Build
-
-```bash
-$ cargo build --release
-```
-
-To build a static linked binary, use the ``x86_64-unknown-linux-musl`` target:
-
-```bash
-$ cargo build --release --target=x86_64-unknown-linux-musl
-```
-
-## Usage
-
-### Filter by database
-
-```bash
-$ aof /usr/lib/redis/appendonly.aof -d 1
-```
-
-## License
-
 The MIT License (MIT)
 
 Copyright (c) 2016 BosonData 
