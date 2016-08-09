@@ -1,0 +1,9 @@
+[package]
+authors = ["messense <messense@icloud.com>"]
+name = "aof"
+version = "0.1.0"
+
+[dependencies]
+clap = "2.10.0"
+regex = "0.1.73"
+resp = "0.4.0"
