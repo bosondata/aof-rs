@@ -1,6 +1,15 @@
 # aof-rs - Redis appendonly file filter
 
 [![Build Status](https://travis-ci.org/bosondata/aof-rs.svg?branch=master)](https://travis-ci.org/bosondata/aof-rs)
+[![Crates.io](https://img.shields.io/crates/v/aof.svg)](https://crates.io/crates/aof)
+
+## Installation
+
+You can install ``aof-rs`` using Cargo:
+
+```bash
+$ cargo install aof
+```
 
 ## Build
 
