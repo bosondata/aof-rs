@@ -28,6 +28,28 @@ $ aof /usr/lib/redis/appendonly.aof -d 1
 $ aof /usr/lib/redis/appendonly.aof -c hmset
 ```
 
+### Filter by key pattern
+
+```bash
+$ aof /usr/lib/redis/appendonly.aof -k '^*:count$'
+```
+
+You can combine all these filters together to have better control.
+
+### Restore to Redis
+
+First, filter out the stuffs you want and save it to some file:
+
+```bash
+$ aof /usr/lib/redis/appendonly.aof -d 1 > ~/db1.aof
+```
+
+Then pipe the filtered AOF file to ``redis-cli`` to mass insert data to another Redis:
+
+```bash
+$ cat ~/db1.aof | redis-cli -n 1 --pipe
+```
+
 ## License
 
 The MIT License (MIT)

@@ -8,7 +8,7 @@ pub trait Filter {
     fn matches_db(&self, _db: u32) -> bool {
         true
     }
-    fn matches_key(&self, _key: &[u8]) -> bool {
+    fn matches_key(&self, _key: &str) -> bool {
         true
     }
     fn matches_cmd(&self, _cmd: &str) -> bool {
@@ -54,13 +54,10 @@ impl Filter for SimpleFilter {
         }
     }
 
-    fn matches_key(&self, key: &[u8]) -> bool {
+    fn matches_key(&self, key: &str) -> bool {
         match self.keys.clone() {
             None => true,
-            Some(re) => {
-                let key = unsafe { str::from_utf8_unchecked(key) };
-                re.is_match(key)
-            }
+            Some(re) => re.is_match(key),
         }
     }
 
@@ -98,6 +95,7 @@ impl<R: BufRead, F: Filter> AOFParser<R, F> {
                 match value {
                     Value::Array(ref vals) => {
                         let cmd;
+                        let key;
                         if let Value::BufBulk(bytes) = vals[0].clone() {
                             cmd = String::from_utf8(bytes).unwrap();
                             if "SELECT" == &cmd {
@@ -107,11 +105,24 @@ impl<R: BufRead, F: Filter> AOFParser<R, F> {
                                         .parse::<u32>()
                                         .unwrap());
                                 }
+                                key = None;
+                            } else {
+                                if let Value::BufBulk(bytes) = vals[1].clone() {
+                                    key = Some(String::from_utf8(bytes).unwrap())
+                                } else {
+                                    key = None;
+                                }
                             }
                             if let Some(db) = current_db {
                                 if self.filter.matches_db(db) {
                                     if self.filter.matches_cmd(&cmd) {
-                                        print!("{}", value.to_encoded_string().unwrap());
+                                        if let Some(key_str) = key {
+                                            if self.filter.matches_key(&key_str) {
+                                                print!("{}", value.to_encoded_string().unwrap());
+                                            }
+                                        } else {
+                                            print!("{}", value.to_encoded_string().unwrap());
+                                        }
                                     }
                                 }
                             }
