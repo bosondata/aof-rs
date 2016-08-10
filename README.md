@@ -17,7 +17,7 @@ $ cargo install aof
 $ cargo build --release
 ```
 
-To build a static linked binary, use the ``x86_64-unknown-linux-musl`` target:
+To build a statically linked binary, use the ``x86_64-unknown-linux-musl`` target:
 
 ```bash
 $ cargo build --release --target=x86_64-unknown-linux-musl
