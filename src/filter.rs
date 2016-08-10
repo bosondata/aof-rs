@@ -5,11 +5,18 @@ use regex::Regex;
 use resp::{Value, Decoder};
 
 pub trait Filter {
-    fn matches_db(&self, _db: u32) -> bool { true }
-    fn matches_key(&self, _key: &[u8]) -> bool { true }
-    fn matches_cmd(&self, _cmd: &[u8]) -> bool { true }
+    fn matches_db(&self, _db: u32) -> bool {
+        true
+    }
+    fn matches_key(&self, _key: &[u8]) -> bool {
+        true
+    }
+    fn matches_cmd(&self, _cmd: &[u8]) -> bool {
+        true
+    }
 }
 
+#[derive(Debug)]
 pub struct SimpleFilter {
     databases: Vec<u32>,
     keys: Option<Regex>,
@@ -51,7 +58,7 @@ impl Filter for SimpleFilter {
         match self.keys.clone() {
             None => true,
             Some(re) => {
-                let key = unsafe{ str::from_utf8_unchecked(key) };
+                let key = unsafe { str::from_utf8_unchecked(key) };
                 re.is_match(key)
             }
         }
@@ -61,7 +68,7 @@ impl Filter for SimpleFilter {
 pub struct AOFParser<R: BufRead, F: Filter> {
     input: R,
     filter: F,
-    decoder: Decoder
+    decoder: Decoder,
 }
 
 impl<R: BufRead, F: Filter> AOFParser<R, F> {
@@ -87,7 +94,10 @@ impl<R: BufRead, F: Filter> AOFParser<R, F> {
                             cmd = String::from_utf8(bytes).unwrap();
                             if "SELECT" == &cmd {
                                 if let Value::BufBulk(bytes) = vals[1].clone() {
-                                    current_db = Some(String::from_utf8(bytes).unwrap().parse::<u32>().unwrap());
+                                    current_db = Some(String::from_utf8(bytes)
+                                        .unwrap()
+                                        .parse::<u32>()
+                                        .unwrap());
                                 }
                             }
                             if let Some(db) = current_db {
@@ -96,8 +106,8 @@ impl<R: BufRead, F: Filter> AOFParser<R, F> {
                                 }
                             }
                         }
-                    },
-                    _ => unreachable!()
+                    }
+                    _ => unreachable!(),
                 }
             }
         }
