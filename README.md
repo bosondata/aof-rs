@@ -22,11 +22,17 @@ $ cargo build --release --target=x86_64-unknown-linux-musl
 $ aof /usr/lib/redis/appendonly.aof -d 1
 ```
 
+### Filter by command
+
+```bash
+$ aof /usr/lib/redis/appendonly.aof -c hmset
+```
+
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2016 BosonData 
+Copyright (c) 2016 BosonData
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

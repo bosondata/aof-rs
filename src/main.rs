@@ -9,7 +9,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::path::Path;
 use std::process;
-
+use regex::Regex;
 use clap::{App, Arg};
 
 use filter::{AOFParser, SimpleFilter};
@@ -25,6 +25,17 @@ fn main() {
                              .short("d")
                              .long("database")
                              .multiple(true)
+                             .takes_value(true))
+                      .arg(Arg::with_name("cmds")
+                             .help("Commands to show. Can be specified multiple times")
+                             .short("c")
+                             .long("command")
+                             .multiple(true)
+                             .takes_value(true))
+                      .arg(Arg::with_name("keys")
+                             .help("Keys to show. Can be a regular expression")
+                             .short("k")
+                             .long("keys")
                              .takes_value(true))
                       .arg(Arg::with_name("aof_file")
                              .value_name("FILE")
@@ -44,6 +55,15 @@ fn main() {
         for db in values_t!(matches.values_of("dbs"), u32).unwrap_or_else(|e| e.exit()) {
             filter.add_database(db);
         }
+    }
+    if matches.is_present("cmds") {
+        for cmd in values_t!(matches.values_of("cmds"), String).unwrap_or_else(|e| e.exit()) {
+            filter.add_command(cmd.to_uppercase());
+        }
+    }
+    if matches.is_present("keys") {
+        let re = value_t!(matches.value_of("keys"), Regex).unwrap_or_else(|e| e.exit());
+        filter.add_keys(re);
     }
     let file = File::open(&path).unwrap();
     let mut reader = BufReader::new(file);

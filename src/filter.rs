@@ -11,7 +11,7 @@ pub trait Filter {
     fn matches_key(&self, _key: &[u8]) -> bool {
         true
     }
-    fn matches_cmd(&self, _cmd: &[u8]) -> bool {
+    fn matches_cmd(&self, _cmd: &str) -> bool {
         true
     }
 }
@@ -63,6 +63,14 @@ impl Filter for SimpleFilter {
             }
         }
     }
+
+    fn matches_cmd(&self, cmd: &str) -> bool {
+        if self.commands.is_empty() {
+            true
+        } else {
+            self.commands.iter().any(|x| x == cmd)
+        }
+    }
 }
 
 pub struct AOFParser<R: BufRead, F: Filter> {
@@ -102,7 +110,9 @@ impl<R: BufRead, F: Filter> AOFParser<R, F> {
                             }
                             if let Some(db) = current_db {
                                 if self.filter.matches_db(db) {
-                                    print!("{}", value.to_encoded_string().unwrap());
+                                    if self.filter.matches_cmd(&cmd) {
+                                        print!("{}", value.to_encoded_string().unwrap());
+                                    }
                                 }
                             }
                         }
