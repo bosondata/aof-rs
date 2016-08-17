@@ -18,7 +18,7 @@ use filter::{AOFParser, SimpleFilter};
 fn main() {
     let matches = App::new("aof")
         .version(env!("CARGO_PKG_VERSION"))
-        .author("Messense Lv <messense@icloud.com")
+        .author("Messense Lv <messense@icloud.com>")
         .about("Redis AppendOnly file filter")
         .arg(Arg::with_name("dbs")
             .help("Databases to show. Can be specified multiple times")
