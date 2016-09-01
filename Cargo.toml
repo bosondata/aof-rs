@@ -10,9 +10,9 @@ homepage = "https://github.com/bosondata/aof-rs"
 repository = "https://github.com/bosondata/aof-rs"
 
 [dependencies]
-clap = "2.10.0"
-regex = "0.1.73"
-resp = "0.4.0"
+clap = "2.11"
+regex = "0.1"
+resp = "0.4"
 
 [features]
 unstable = []
