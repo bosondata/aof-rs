@@ -63,7 +63,7 @@ $ cat ~/db1.aof | redis-cli -n 1 --pipe
 
 The MIT License (MIT)
 
-Copyright (c) 2016 BosonData
+Copyright (c) 2016 - 2017 BosonData
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
