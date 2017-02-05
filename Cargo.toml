@@ -5,13 +5,13 @@ keywords = ["Redis", "appendonly"]
 license = "MIT"
 name = "aof"
 readme = "README.md"
-version = "0.1.0"
+version = "0.1.1"
 homepage = "https://github.com/bosondata/aof-rs"
 repository = "https://github.com/bosondata/aof-rs"
 
 [dependencies]
-clap = "2.14"
-regex = "0.1"
+clap = "2.20"
+regex = "0.2"
 resp = "0.4"
 
 [features]
