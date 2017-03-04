@@ -5,7 +5,7 @@ keywords = ["Redis", "appendonly"]
 license = "MIT"
 name = "aof"
 readme = "README.md"
-version = "0.1.1"
+version = "0.1.2"
 homepage = "https://github.com/bosondata/aof-rs"
 repository = "https://github.com/bosondata/aof-rs"
 
