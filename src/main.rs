@@ -66,6 +66,6 @@ fn main() {
         filter.add_keys(re);
     }
     let file = File::open(&path).unwrap();
-    let mut reader = BufReader::new(file);
-    AOFParser::new(&mut reader, filter).filter();
+    let reader = BufReader::new(file);
+    AOFParser::new(reader, filter).filter();
 }

@@ -1,5 +1,5 @@
 use std::str;
-use std::io::BufRead;
+use std::io::{Read, BufReader};
 use regex::Regex;
 
 use resp::{Value, Decoder};
@@ -70,66 +70,59 @@ impl Filter for SimpleFilter {
     }
 }
 
-pub struct AOFParser<R: BufRead, F: Filter> {
-    input: R,
+pub struct AOFParser<R: Read, F: Filter> {
     filter: F,
-    decoder: Decoder,
+    decoder: Decoder<R>,
 }
 
-impl<R: BufRead, F: Filter> AOFParser<R, F> {
-    pub fn new(input: R, filter: F) -> AOFParser<R, F> {
+impl<R: Read, F: Filter> AOFParser<R, F> {
+    pub fn new(input: BufReader<R>, filter: F) -> AOFParser<R, F> {
         AOFParser {
-            input: input,
             filter: filter,
-            decoder: Decoder::with_buf_bulk(),
+            decoder: Decoder::with_buf_bulk(input),
         }
     }
 
     pub fn filter(&mut self) {
-        let mut buffer = String::new();
         let mut current_db = None;
-        while self.input.read_line(&mut buffer).unwrap() > 0 {
-            self.decoder.feed(buffer.as_bytes()).unwrap();
-            buffer.clear();
-            if let Some(value) = self.decoder.read() {
-                match value {
-                    Value::Array(ref vals) => {
-                        let cmd;
-                        let key;
-                        if let Value::BufBulk(bytes) = vals[0].clone() {
-                            cmd = String::from_utf8(bytes).unwrap();
-                            if "SELECT" == &cmd {
-                                if let Value::BufBulk(bytes) = vals[1].clone() {
-                                    current_db = Some(String::from_utf8(bytes)
-                                        .unwrap()
-                                        .parse::<u32>()
-                                        .unwrap());
-                                }
-                                key = None;
-                            } else {
-                                if let Value::BufBulk(bytes) = vals[1].clone() {
-                                    key = Some(String::from_utf8(bytes).unwrap())
-                                } else {
-                                    key = None;
-                                }
+        while let Ok(value) = self.decoder.decode() {
+            match value {
+                Value::Array(ref vals) => {
+                    let cmd;
+                    let key;
+                    if let Value::BufBulk(bytes) = vals[0].clone() {
+                        cmd = String::from_utf8(bytes).unwrap();
+                        if "SELECT" == &cmd {
+                            if let Value::BufBulk(bytes) = vals[1].clone() {
+                                current_db = Some(String::from_utf8(bytes)
+                                    .unwrap()
+                                    .parse::<u32>()
+                                    .unwrap());
                             }
-                            if let Some(db) = current_db {
-                                if self.filter.matches_db(db) {
-                                    if self.filter.matches_cmd(&cmd) {
-                                        if let Some(key_str) = key {
-                                            if self.filter.matches_key(&key_str) {
-                                                print!("{}", value.to_encoded_string().unwrap());
-                                            }
-                                        } else {
+                            key = None;
+                        } else {
+                            if let Value::BufBulk(bytes) = vals[1].clone() {
+                                key = Some(String::from_utf8(bytes).unwrap())
+                            } else {
+                                key = None;
+                            }
+                        }
+                        if let Some(db) = current_db {
+                            if self.filter.matches_db(db) {
+                                if self.filter.matches_cmd(&cmd) {
+                                    if let Some(key_str) = key {
+                                        if self.filter.matches_key(&key_str) {
                                             print!("{}", value.to_encoded_string().unwrap());
                                         }
+                                    } else {
+                                        print!("{}", value.to_encoded_string().unwrap());
                                     }
                                 }
                             }
                         }
                     }
-                    _ => unreachable!(),
                 }
+                _ => unreachable!(),
             }
         }
     }
