@@ -106,7 +106,7 @@ impl<R: Read, F: Filter> AOFParser<R, F> {
                             key = None;
                         }
                         if let Some(db) = current_db {
-                            if self.filter.matches_db(db) &&  self.filter.matches_cmd(&cmd) {
+                            if self.filter.matches_db(db) && self.filter.matches_cmd(&cmd) {
                                 if let Some(key_str) = key {
                                     if self.filter.matches_key(&key_str) {
                                         print!("{}", value.to_encoded_string().unwrap());
