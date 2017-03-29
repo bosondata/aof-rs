@@ -100,23 +100,19 @@ impl<R: Read, F: Filter> AOFParser<R, F> {
                                     .unwrap());
                             }
                             key = None;
+                        } else if let Value::BufBulk(bytes) = vals[1].clone() {
+                            key = Some(String::from_utf8(bytes).unwrap())
                         } else {
-                            if let Value::BufBulk(bytes) = vals[1].clone() {
-                                key = Some(String::from_utf8(bytes).unwrap())
-                            } else {
-                                key = None;
-                            }
+                            key = None;
                         }
                         if let Some(db) = current_db {
-                            if self.filter.matches_db(db) {
-                                if self.filter.matches_cmd(&cmd) {
-                                    if let Some(key_str) = key {
-                                        if self.filter.matches_key(&key_str) {
-                                            print!("{}", value.to_encoded_string().unwrap());
-                                        }
-                                    } else {
+                            if self.filter.matches_db(db) &&  self.filter.matches_cmd(&cmd) {
+                                if let Some(key_str) = key {
+                                    if self.filter.matches_key(&key_str) {
                                         print!("{}", value.to_encoded_string().unwrap());
                                     }
+                                } else {
+                                    print!("{}", value.to_encoded_string().unwrap());
                                 }
                             }
                         }
