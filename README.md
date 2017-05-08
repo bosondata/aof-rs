@@ -11,6 +11,12 @@ You can install ``aof-rs`` using Cargo:
 $ cargo install aof
 ```
 
+Or you can use `snap`:
+
+```bash
+$ snap install aof
+```
+
 ## Build
 
 ```bash
