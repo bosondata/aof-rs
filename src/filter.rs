@@ -1,5 +1,5 @@
 use std::str;
-use std::io::{Read, BufReader};
+use std::io::{self, Read, Write, BufReader};
 use regex::Regex;
 
 use resp::{Value, Decoder};
@@ -84,24 +84,25 @@ impl<R: Read, F: Filter> AOFParser<R, F> {
     }
 
     pub fn filter(&mut self) {
+        let stdout = io::stdout();
+        let mut handle = stdout.lock();
         let mut current_db = None;
         while let Ok(value) = self.decoder.decode() {
             match value {
                 Value::Array(ref vals) => {
                     let cmd;
                     let key;
-                    if let Value::BufBulk(bytes) = vals[0].clone() {
-                        cmd = String::from_utf8(bytes).unwrap();
+                    if let Value::BufBulk(ref bytes) = vals[0] {
+                        cmd = String::from_utf8_lossy(bytes);
                         if "SELECT" == &cmd {
-                            if let Value::BufBulk(bytes) = vals[1].clone() {
-                                current_db = Some(String::from_utf8(bytes)
-                                    .unwrap()
+                            if let Value::BufBulk(ref bytes) = vals[1] {
+                                current_db = Some(String::from_utf8_lossy(bytes)
                                     .parse::<u32>()
                                     .unwrap());
                             }
                             key = None;
-                        } else if let Value::BufBulk(bytes) = vals[1].clone() {
-                            key = Some(String::from_utf8(bytes).unwrap())
+                        } else if let Value::BufBulk(ref bytes) = vals[1] {
+                            key = Some(String::from_utf8_lossy(bytes))
                         } else {
                             key = None;
                         }
@@ -109,10 +110,10 @@ impl<R: Read, F: Filter> AOFParser<R, F> {
                             if self.filter.matches_db(db) && self.filter.matches_cmd(&cmd) {
                                 if let Some(key_str) = key {
                                     if self.filter.matches_key(&key_str) {
-                                        print!("{}", value.to_encoded_string().unwrap());
+                                        handle.write(&value.encode()).unwrap();
                                     }
                                 } else {
-                                    print!("{}", value.to_encoded_string().unwrap());
+                                    handle.write(&value.encode()).unwrap();
                                 }
                             }
                         }
