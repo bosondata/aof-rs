@@ -16,7 +16,7 @@ dependencies = [
 
 [[package]]
 name = "aof"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "clap 2.31.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
