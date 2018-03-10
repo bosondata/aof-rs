@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/bosondata/aof-rs.svg?branch=master)](https://travis-ci.org/bosondata/aof-rs)
 [![Crates.io](https://img.shields.io/crates/v/aof.svg)](https://crates.io/crates/aof)
+[![Snap Status](https://build.snapcraft.io/badge/bosondata/aof-rs.svg)](https://build.snapcraft.io/user/bosondata/aof-rs)
 
 ## Installation
 
@@ -14,7 +15,7 @@ $ cargo install aof
 Or you can use `snap`:
 
 ```bash
-$ snap install aof
+$ sudo snap install aof
 ```
 
 ## Build
