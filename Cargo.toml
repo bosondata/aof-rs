@@ -15,5 +15,5 @@ regex = "0.2"
 resp = "1.0"
 
 [features]
-nightly = ["regex/simd-accel"]
-unstable = []
+nightly = ["unstable"]
+unstable = ["regex/unstable"]
